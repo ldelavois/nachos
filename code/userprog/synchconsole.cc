@@ -25,14 +25,14 @@ SynchConsole::~SynchConsole(){
 
 void SynchConsole::SynchPutChar(int ch){
     if(ch!= EOF && ch!='\n'){
-    console->PutChar('<');
-    writeDone->P();
-    console->PutChar(ch);
-    writeDone->P();
-    console->PutChar('>');
-    writeDone->P();
+        console->PutChar('<');
+        writeDone->P();
+        console->PutChar(ch);
+        writeDone->P();
+        console->PutChar('>');
+        writeDone->P();
     }
-     if (ch == 'q') {
+    if (ch == 'q'){
             printf ("Nothing more, bye!\n");
         }
     if(ch==EOF){
@@ -47,10 +47,33 @@ int SynchConsole::SynchGetChar(){
 }
 
 void SynchConsole::SynchPutString(const char s[]){
-// ...
+    for (int i=0;i!='\0';i++)
+    {
+        if(s[i]!=EOF && s[i]!='\n')
+        {
+            synchconsole->SynchPutChar(s[i]);
+            writeDone->P();
+        }
+    }
 }
 
 void SynchConsole::SynchGetString(char *s, int n){
 // ...
+}
+
+int copyStringFromMachine(int from, char *to, unsigned size){
+
+    int tmp;
+    for(int i = 0; i<size; i++){
+        tmp = machine->ReadMem(from+i, 1, &tmp);
+        if( (char)tmp !='\0'){
+            to[i] = (char)tmp;
+        }
+        else{
+            to[i] = '\0';
+            return i+1;
+        }        
+    }
+    return size;
 }
 #endif // CHANGED

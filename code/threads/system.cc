@@ -12,6 +12,12 @@
 #include <malloc.h>
 #endif
 
+#ifdef CHANGED
+#ifdef USER_PROGRAM
+SynchConsole *synchconsole;
+#endif
+#endif
+
 // This defines *all* of the global data structures used by Nachos.
 // These are all initialized and de-allocated by this file.
 
@@ -119,7 +125,7 @@ Initialize (int argc, char **argv)
 		      argCount = 2;
 		  }
 	    }
-	  else if (!strcmp (*argv, "-rs"))
+	  else if (!strcmp (*argv, "-r"))
 	    {
 		int seed;
 		ASSERT (argc > 1);
@@ -212,6 +218,9 @@ Cleanup ()
 #endif
 
 #ifdef USER_PROGRAM
+    #ifdef CHANGED
+    delete synchconsole;
+    #endif //CHANGED
     delete machine;
     machine = NULL;
 #endif

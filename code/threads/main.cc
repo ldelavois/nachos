@@ -24,6 +24,7 @@
 #endif
 
 
+
 // External functions used by this file
 
 extern void ThreadTest (void), Copy (char *unixFile, char *nachosFile);
@@ -116,6 +117,7 @@ main (int argc, char **argv)
 	  if (!strcmp (*argv, "-x"))
 	    {			// run a user program
 		ASSERT (argc > 1);
+        synchconsole = new SynchConsole(NULL,NULL);
 		StartProcess (*(argv + 1));
 		argCount = 2;
 	    }
