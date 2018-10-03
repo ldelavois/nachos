@@ -47,13 +47,11 @@ int SynchConsole::SynchGetChar(){
 }
 
 void SynchConsole::SynchPutString(const char s[]){
-    for (int i=0;i!='\0';i++)
+    int i = 0;
+    while(s[i]!='\0')
     {
-        if(s[i]!=EOF && s[i]!='\n')
-        {
-            synchconsole->SynchPutChar(s[i]);
-            writeDone->P();
-        }
+        synchconsole->SynchPutChar(s[i]);
+        i++;
     }
 }
 
@@ -61,11 +59,11 @@ void SynchConsole::SynchGetString(char *s, int n){
 // ...
 }
 
-int copyStringFromMachine(int from, char *to, unsigned size){
+int SynchConsole::copyStringFromMachine(int from, char *to, unsigned size){
 
     int tmp;
-    for(int i = 0; i<size; i++){
-        tmp = machine->ReadMem(from+i, 1, &tmp);
+    for(unsigned i = 0; i<size; i++){
+        machine->ReadMem(from+i, 1, &tmp);
         if( (char)tmp !='\0'){
             to[i] = (char)tmp;
         }

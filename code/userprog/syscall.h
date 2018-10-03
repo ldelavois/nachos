@@ -111,6 +111,7 @@ void Write (const void *buffer, int size, OpenFileId id);
 
 /* Putchar */
 void PutChar(char c);
+void PutString(char s[]);
 #endif //CHANGED 
 
 /* Read "size" bytes from the open file into "buffer".  

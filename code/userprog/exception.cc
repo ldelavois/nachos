@@ -80,6 +80,13 @@ void ExceptionHandler(ExceptionType which)
             break;
         }
         #ifdef CHANGED
+        case SC_Exit:
+		{
+			DEBUG ('s', "Shutdown, initiated by user.\n");
+			printf("code retour main : %d\n",machine->ReadRegister(4));			
+			interrupt->Halt ();
+			break;
+		}
         case SC_PutChar:
         {
             DEBUG('s', "PutChar\n");
@@ -87,6 +94,20 @@ void ExceptionHandler(ExceptionType which)
             synchconsole->SynchPutChar(c);
             break;
         }
+
+        case SC_PutString:
+        {
+            char local [MAX_STRING_SIZE];
+            DEBUG('s', "PutString\n");
+            int c = machine->ReadRegister(4);
+            
+            synchconsole->copyStringFromMachine(c,(char *)local,MAX_STRING_SIZE);
+            printf("local = %s \n", local);
+            synchconsole->SynchPutString(local);
+            break;
+
+        }
+
         #endif //CHANGED
         default:
         {
