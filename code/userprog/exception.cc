@@ -83,7 +83,7 @@ void ExceptionHandler(ExceptionType which)
         case SC_Exit:
 		{
 			DEBUG ('s', "Shutdown, initiated by user.\n");
-			printf("code retour main : %d\n",machine->ReadRegister(4));			
+			printf("\ncode retour main : %d\n",machine->ReadRegister(4));			
 			interrupt->Halt ();
 			break;
 		}
@@ -102,11 +102,58 @@ void ExceptionHandler(ExceptionType which)
             int c = machine->ReadRegister(4);
             
             synchconsole->copyStringFromMachine(c,(char *)local,MAX_STRING_SIZE);
-            printf("local = %s \n", local);
             synchconsole->SynchPutString(local);
             break;
 
         }
+
+        case SC_GetChar:
+		{
+				DEBUG ('s', "GetChar\n");
+				char c = synchconsole->SynchGetChar();
+				machine->WriteRegister(2, c);
+				break;
+		}
+
+        case SC_GetString:
+		{
+				DEBUG ('s', "GetString\n");
+				int addr = machine->ReadRegister(4);
+				int size = machine->ReadRegister(5);
+
+
+				char *chaine = (char *)malloc(MAX_STRING_SIZE);
+
+                //for(int i = 0; i < size; i += MAX_STRING_SIZE){
+                int i=0;
+                int count = size / MAX_STRING_SIZE;
+                int countMore = size % MAX_STRING_SIZE;
+                int t;
+                if (countMore == 0){
+                    while( size > 0){
+                        if(size > MAX_STRING_SIZE)
+                            t = MAX_STRING_SIZE;
+                        else 
+                            t = size;
+
+                        
+                        synchconsole->SynchGetString(chaine, t);
+                        printf("chaine= %s \n",chaine);
+                        synchconsole->copyStringToMachine(addr+(MAX_STRING_SIZE*i), chaine, t);
+                        size -= MAX_STRING_SIZE;
+                        i++;
+                        
+                    }
+                    free(chaine);
+                    break;
+                }
+
+
+
+
+
+                
+		}
 
         #endif //CHANGED
         default:
