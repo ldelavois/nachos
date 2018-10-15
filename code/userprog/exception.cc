@@ -122,37 +122,28 @@ void ExceptionHandler(ExceptionType which)
 				int size = machine->ReadRegister(5);
 
 
-				char *chaine = (char *)malloc(MAX_STRING_SIZE);
+				char *chaine  = new char[MAX_STRING_SIZE];
 
-                //for(int i = 0; i < size; i += MAX_STRING_SIZE){
                 int i=0;
-                int count = size / MAX_STRING_SIZE;
-                int countMore = size % MAX_STRING_SIZE;
                 int t;
-                if (countMore == 0){
-                    while( size > 0){
-                        if(size > MAX_STRING_SIZE)
-                            t = MAX_STRING_SIZE;
-                        else 
-                            t = size;
-
-                        
-                        synchconsole->SynchGetString(chaine, t);
-                        printf("chaine= %s \n",chaine);
-                        synchconsole->copyStringToMachine(addr+(MAX_STRING_SIZE*i), chaine, t);
-                        size -= MAX_STRING_SIZE;
-                        i++;
-                        
-                    }
-                    free(chaine);
-                    break;
+                printf("Max_string_size = %d\n",MAX_STRING_SIZE);
+                while( size > 0){
+                    if(size > MAX_STRING_SIZE)
+                        t = MAX_STRING_SIZE;
+                    else 
+                        t = size;
+                    
+                    synchconsole->SynchGetString(chaine, t);
+                    printf("chaine = %s",chaine);
+                    printf("   size = %d",size);
+                    printf("   i = %d \n",i);
+                    synchconsole->copyStringToMachine(addr+(MAX_STRING_SIZE*i), chaine, t);
+                    size -= MAX_STRING_SIZE;
+                    i++;
+                    
                 }
-
-
-
-
-
-                
+                delete chaine;
+                break;
 		}
 
         #endif //CHANGED

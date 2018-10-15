@@ -62,10 +62,8 @@ void SynchConsole::SynchGetString(char *s, int n){
         
         for(int i=0; i < n; i++){
             ch = SynchGetChar();
-            if(ch == '\0' || ch == '\n'){
-                s[i] = '\0';
+            if(ch=='\0' || ch =='\n')
                 break;
-            }
             s[i] = ch;
         }
     }
@@ -91,8 +89,7 @@ int SynchConsole::copyStringToMachine(int to, char *from, unsigned size){
 
   for(unsigned i=0; i<size; i++){
       machine->WriteMem(to+i, 1, from[i]); 
-      if(from[i] == '\0')
-        return i;
+      
   }
   return size;
 
