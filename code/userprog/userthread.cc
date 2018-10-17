@@ -1,3 +1,4 @@
+#ifdef CHANGED
 #include "copyright.h"
 #include "system.h"
 #include "addrspace.h"
@@ -5,18 +6,51 @@
 #include "userthread.h"
 #include "thread.h"
 
-typedef struct farg{
+
+//Structure (schmurtz)contenant la fonction et ses arguments, à passer au thread créé 
+typedef struct schmurtz schmurtz;
+struct schmurtz{
     int f;
     int arg;
+};
+
+static void StartUserThread(void *arg){
+
+    schmurtz *threadArgs = (schmurtz* )arg;
+
+    int i;
+
+    for (i = 0; i < NumTotalRegs; i++)
+	machine->WriteRegister (i, 0);
+
+    machine->WriteRegister (PCReg, threadArgs->f);
+    machine->WriteRegister (4, threadArgs->arg);
+    machine->WriteRegister (NextPCReg, machine->ReadRegister(PCReg) + 4);
+    machine->WriteRegister (StackReg, numPages * PageSize - 16 - 256);
+    DEBUG ('a', "Initializing stack register to 0x%x\n",
+	   numPages * PageSize - 16 - 256);
+
+
 }
 
-int do_ThreadCreate(void f(void *arg), void *arg){
+int do_ThreadCreate(int f, int arg){
     Thread *t = new Thread("newThread");
+    struct schmurtz *argStart = (struct schmurtz*)malloc(sizeof(struct schmurtz));
+    argStart->f = f;
+    argStart->arg = arg;
+
+    t->Start (StartUserThread, argStart);
+
+    return 0;
     
 }
 
-void do_ThreadExit(void);
+void do_ThreadExit(void){
+    
+};
 
 
 
 
+
+#endif  //CHANGED
