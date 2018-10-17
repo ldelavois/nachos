@@ -1,25 +1,22 @@
 #include "copyright.h"
 #include "system.h"
-#include "console.h"
-#include "synchconsole.h"
 #include "addrspace.h"
 #include "synch.h"
+#include "userthread.h"
+#include "thread.h"
 
-
-void ThreadExit()
-
-{
-if 1
-{
-int ThreadCreate(void f(void *arg), void *arg);
-
-void ThreadExit(void);
-
+typedef struct farg{
+    int f;
+    int arg;
 }
 
-else return -1;
-
-
-
-
+int do_ThreadCreate(void f(void *arg), void *arg){
+    Thread *t = new Thread("newThread");
+    
 }
+
+void do_ThreadExit(void);
+
+
+
+
