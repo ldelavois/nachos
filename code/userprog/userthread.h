@@ -8,7 +8,7 @@
 
 
 
-int do_ThreadCreate(int, int);
+int do_ThreadCreate(int f, int arg);
 void do_ThreadExit(void);
 
 #endif  //USERTHREAD

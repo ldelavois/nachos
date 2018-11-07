@@ -21,6 +21,7 @@
 #include "noff.h"
 #include "syscall.h"
 #include "new"
+#include "synch.h"
 
 //----------------------------------------------------------------------
 // SwapHeader
@@ -64,6 +65,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
+	nbThreads = 0;
 
     executable->ReadAt (&noffH, sizeof (noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&

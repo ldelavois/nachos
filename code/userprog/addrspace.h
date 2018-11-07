@@ -19,6 +19,8 @@
 
 #define UserStacksAreaSize		1024	// increase this as necessary!
 
+class Semaphore;
+
 class AddrSpace:dontcopythis
 {
   public:
@@ -37,6 +39,7 @@ class AddrSpace:dontcopythis
     void DecNbThreads();    // Decrement nbThreads
     void IncNbThreads();    // Increment nbThreads
     int GetNbThreads();     
+	int AllocateUserStack();
 
 #endif //CHANGED
 
@@ -45,6 +48,8 @@ class AddrSpace:dontcopythis
     // for now!
     unsigned int numPages;	// Number of pages in the virtual 
     // address space
+    int nbThreads;
+    Semaphore *lock;
 };
 
 #endif // ADDRSPACE_H
