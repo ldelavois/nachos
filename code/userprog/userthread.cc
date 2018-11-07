@@ -26,10 +26,12 @@ static void StartUserThread(void *arg){
     machine->WriteRegister (PCReg, threadArgs->f);
     machine->WriteRegister (4, threadArgs->arg);
     machine->WriteRegister (NextPCReg, machine->ReadRegister(PCReg) + 4);
-    machine->WriteRegister (StackReg, numPages * PageSize - 16 - 256);
+    machine->WriteRegister (StackReg, currentThread->space->AllocateUserStack());
     DEBUG ('a', "Initializing stack register to 0x%x\n",
-	   numPages * PageSize - 16 - 256);
+	   currentThread->space->AllocateUserStack());
+    
 
+    machine->Run();
 
 }
 
@@ -47,8 +49,8 @@ int do_ThreadCreate(int f, int arg){
 
 void do_ThreadExit(void){
     
+    currentThread->Finish();
 };
-
 
 
 

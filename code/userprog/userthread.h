@@ -8,8 +8,8 @@
 
 
 
-extern int do_ThreadCreate(int f, int arg);
-extern void do_ThreadExit(void);
+int do_ThreadCreate(int, int);
+void do_ThreadExit(void);
 
 #endif  //USERTHREAD
 #endif  //CHANGED

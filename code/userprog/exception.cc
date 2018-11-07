@@ -24,7 +24,6 @@
 #include "copyright.h"
 #include "system.h"
 #include "syscall.h"
-#include "userthread.cc"
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
@@ -84,7 +83,7 @@ void ExceptionHandler(ExceptionType which)
         case SC_Exit:
 		{
 			DEBUG ('s', "Shutdown, initiated by user.\n");
-			printf("\ncode retour main : %d\n",machine->ReadRegister(4));			
+			printf("code retour main : %d\n",machine->ReadRegister(4));			
 			interrupt->Halt ();
 			break;
 		}
@@ -103,11 +102,11 @@ void ExceptionHandler(ExceptionType which)
             int c = machine->ReadRegister(4);
             
             synchconsole->copyStringFromMachine(c,(char *)local,MAX_STRING_SIZE);
+            printf("local = %s \n", local);
             synchconsole->SynchPutString(local);
             break;
 
         }
-
         case SC_GetChar:
 		{
 				DEBUG ('s', "GetChar\n");
@@ -146,6 +145,28 @@ void ExceptionHandler(ExceptionType which)
                 delete chaine;
                 break;
 		}
+
+        case SC_ThreadCreate:
+		{
+				DEBUG ('s', "ThreadCreate\n");	
+				int f = machine->ReadRegister(4);
+				int arg = machine->ReadRegister(5);
+				do_ThreadCreate(f, arg);
+                currentThread->space->IncNbThreads();
+				break;				
+		}
+
+		case SC_ThreadExit:
+		{
+				DEBUG ('s', "ThreadExit\n");
+                currentThread->space->DecNbThreads();
+                if(currentThread->space->GetNbThreads() == 0){
+					
+                }
+                do_ThreadExit();
+				break;
+		}
+
 
         #endif //CHANGED
         default:

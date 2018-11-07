@@ -197,3 +197,28 @@ AddrSpace::RestoreState ()
     machine->pageTable = pageTable;
     machine->pageTableSize = numPages;
 }
+
+int
+AddrSpace::AllocateUserStack ()
+{
+    return numPages * PageSize - 16 - 256;
+}
+
+int 
+AddrSpace::GetNbThreads(){
+    return nbThreads;
+}
+
+void
+AddrSpace::IncNbThreads(){
+    lock->P();
+    nbThreads++;
+    lock->V();
+}
+
+void
+AddrSpace::DecNbThreads(){
+    lock->P();
+    nbThreads--;
+    lock->V();
+}

@@ -43,13 +43,12 @@ void SynchConsole::SynchPutChar(int ch){
 
 int SynchConsole::SynchGetChar(){
     readAvail->P();
-    char c = console->GetChar();
-    return c;
+    console->GetChar();
 }
 
 void SynchConsole::SynchPutString(const char s[]){
     int i = 0;
-    while(s[i]!='\0' && i<MAX_STRING_SIZE)
+    while(s[i]!='\0')
     {
         synchconsole->SynchPutChar(s[i]);
         i++;
