@@ -15,6 +15,7 @@ SynchConsole::SynchConsole(const char *in, const char *out){
     readAvail = new Semaphore("read avail", 0);
     writeDone = new Semaphore("write done", 0);
     console = new Console (in, out, ReadAvailHandler, WriteDoneHandler, 0);
+    lock = new Semaphore("lock", 1);
 }
 
 SynchConsole::~SynchConsole(){
@@ -24,6 +25,7 @@ SynchConsole::~SynchConsole(){
 }
 
 void SynchConsole::SynchPutChar(int ch){
+    lock->P();
     if(ch!= EOF && ch!='\n'){
         console->PutChar('<');
         writeDone->P();
@@ -32,6 +34,7 @@ void SynchConsole::SynchPutChar(int ch){
         console->PutChar('>');
         writeDone->P();
     }
+    lock->V();
     if (ch == 'q'){
             printf ("Nothing more, bye!\n");
         }
@@ -42,8 +45,10 @@ void SynchConsole::SynchPutChar(int ch){
 }
 
 int SynchConsole::SynchGetChar(){
+    lock->P();
     readAvail->P();
     console->GetChar();
+    lock->V();
 }
 
 void SynchConsole::SynchPutString(const char s[]){
