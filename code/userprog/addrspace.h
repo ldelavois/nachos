@@ -16,6 +16,7 @@
 #include "copyright.h"
 #include "filesys.h"
 #include "translate.h"
+#include "bitmap.h"
 
 #define UserStacksAreaSize		1024	// increase this as necessary!
 
@@ -42,6 +43,8 @@ class AddrSpace:dontcopythis
 	int AllocateUserStack();
     void synchroThreadsP();
     void synchroThreadsV();
+    void ClearBitMap(int n);
+    int FindBitMap();
 
 #endif //CHANGED
 
@@ -53,6 +56,7 @@ class AddrSpace:dontcopythis
     int nbThreads;
     Semaphore *lock;
     Semaphore *synchroThreads;
+    BitMap *mapStack;
 };
 
 #endif // ADDRSPACE_H

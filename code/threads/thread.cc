@@ -49,6 +49,8 @@ Thread::Thread (const char *threadName)
 	space = currentThread->space;
     else
 	space = NULL;
+    
+    nThread=999;
 
     // must be explicitly set to 0 since when Enabling interrupts,
     // DelayedLoad is called !!!

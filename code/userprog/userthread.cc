@@ -12,6 +12,7 @@ typedef struct schmurtz schmurtz;
 struct schmurtz{
     int f;
     int arg;
+    int numThread;
 };
 
 static void StartUserThread(void *arg){
@@ -29,17 +30,20 @@ static void StartUserThread(void *arg){
     DEBUG ('a', "Initializing stack register to 0x%x\n",
 	   currentThread->space->AllocateUserStack());
     
-
     machine->Run();
-
 }
 
 int do_ThreadCreate(int f, int arg){
+    int tmp = currentThread->space->FindBitMap(); 
+    if(tmp == -1)
+        return -1;
+    
     Thread *t = new Thread("newThread");
     struct schmurtz *argStart = (struct schmurtz*)malloc(sizeof(struct schmurtz));
     argStart->f = f;
     argStart->arg = arg;
-
+    argStart->numThread = numThread;
+    t->nThread = tmp;
     t->Start (StartUserThread, argStart);
 
     return 0;
@@ -47,7 +51,7 @@ int do_ThreadCreate(int f, int arg){
 }
 
 void do_ThreadExit(void){
-    
+    currentThread->space->ClearBitMap(currentThread->nThread);
     currentThread->Finish();
 };
 

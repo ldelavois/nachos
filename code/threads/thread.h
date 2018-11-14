@@ -139,6 +139,9 @@ class Thread:dontcopythis
     void RestoreUserState ();	// restore user-level register state
 
     AddrSpace *space;		// User code this thread is running.
+    #ifdef CHANGED
+    int nThread; //numéro du thread
+    #endif //CHANGED
 #endif
 };
 

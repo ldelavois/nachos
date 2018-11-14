@@ -23,6 +23,7 @@
 #include "new"
 #include "synch.h"
 
+
 //----------------------------------------------------------------------
 // SwapHeader
 //      Do little endian to big endian conversion on the bytes in the 
@@ -68,6 +69,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	nbThreads = 0;
     lock = new Semaphore("lock",1);
     synchroThreads = new Semaphore("synchroThreads",0);
+    mapStack = new BitMap(256);
 
     executable->ReadAt (&noffH, sizeof (noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
@@ -205,7 +207,8 @@ AddrSpace::RestoreState ()
 int
 AddrSpace::AllocateUserStack ()
 {
-    return numPages * PageSize - 16 - 256;
+    int pointer = currentThread->space->mapStack->Find(); //Pointe sur la première case vide du bitmap et donc de la pile
+    return numPages * PageSize - 16 - 256*pointer;
 }
 
 int 
@@ -227,7 +230,6 @@ AddrSpace::DecNbThreads(){
     lock->V();
 }
 
-
 void 
 AddrSpace::synchroThreadsP(){
     synchroThreads->P();
@@ -235,4 +237,14 @@ AddrSpace::synchroThreadsP(){
 void 
 AddrSpace::synchroThreadsV(){
     synchroThreads->V();
+}
+
+void 
+AddrSpace::ClearBitMap(int n){
+    currentThread->space->mapStack->Clear(n);
+}
+
+int 
+AddrSpace::FindBitMap(){
+    currentThread->space->mapStack->Find();
 }
