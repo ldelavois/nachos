@@ -85,13 +85,11 @@ void ExceptionHandler(ExceptionType which)
 		{
 			DEBUG ('s', "Shutdown, initiated by user.\n");
 			printf("code retour main : %d\n",machine->ReadRegister(4));
-            Semaphore *lock = new Semaphore("lock",1);
             while(currentThread->space->GetNbThreads() != 0){
+                // si nombre de threads > 0 P
                 //currentThread->Yield();
-                lock->P();
-                currentThread->space->DecNbThreads();
+                currentThread->space->synchroThreadsP();
             }
-            lock->V();
 			interrupt->Halt ();
 			break;
 		}
@@ -168,6 +166,9 @@ void ExceptionHandler(ExceptionType which)
 		{
 				DEBUG ('s', "ThreadExit\n");
                 currentThread->space->DecNbThreads();
+                if(currentThread->space->GetNbThreads() == 0){
+                    currentThread->space->synchroThreadsV();
+                }
                 do_ThreadExit();
 				break;
 		}

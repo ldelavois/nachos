@@ -22,7 +22,6 @@ static void StartUserThread(void *arg){
 
     for (i = 0; i < NumTotalRegs; i++)
 	machine->WriteRegister (i, 0);
-
     machine->WriteRegister (PCReg, threadArgs->f);
     machine->WriteRegister (4, threadArgs->arg);
     machine->WriteRegister (NextPCReg, machine->ReadRegister(PCReg) + 4);

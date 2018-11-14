@@ -40,6 +40,8 @@ class AddrSpace:dontcopythis
     void IncNbThreads();    // Increment nbThreads
     int GetNbThreads();     
 	int AllocateUserStack();
+    void synchroThreadsP();
+    void synchroThreadsV();
 
 #endif //CHANGED
 
@@ -50,6 +52,7 @@ class AddrSpace:dontcopythis
     // address space
     int nbThreads;
     Semaphore *lock;
+    Semaphore *synchroThreads;
 };
 
 #endif // ADDRSPACE_H

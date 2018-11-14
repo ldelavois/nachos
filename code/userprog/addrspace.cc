@@ -66,7 +66,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
     NoffHeader noffH;
     unsigned int i, size;
 	nbThreads = 0;
-    lock=new Semaphore("lock",1);
+    lock = new Semaphore("lock",1);
+    synchroThreads = new Semaphore("synchroThreads",0);
 
     executable->ReadAt (&noffH, sizeof (noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
@@ -224,4 +225,14 @@ AddrSpace::DecNbThreads(){
     lock->P();
     nbThreads--;
     lock->V();
+}
+
+
+void 
+AddrSpace::synchroThreadsP(){
+    synchroThreads->P();
+}
+void 
+AddrSpace::synchroThreadsV(){
+    synchroThreads->V();
 }
