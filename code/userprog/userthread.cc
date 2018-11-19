@@ -42,7 +42,7 @@ int do_ThreadCreate(int f, int arg){
     struct schmurtz *argStart = (struct schmurtz*)malloc(sizeof(struct schmurtz));
     argStart->f = f;
     argStart->arg = arg;
-    argStart->numThread = numThread;
+    argStart->numThread = currentThread->nThread;
     t->nThread = tmp;
     t->Start (StartUserThread, argStart);
 
