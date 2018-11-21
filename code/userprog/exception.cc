@@ -158,7 +158,7 @@ void ExceptionHandler(ExceptionType which)
 				DEBUG ('s', "ThreadCreate\n");	
 				int f = machine->ReadRegister(4);
 				int arg = machine->ReadRegister(5);
-				int ret=do_ThreadCreate(f, arg);
+				do_ThreadCreate(f, arg);
                 
 				break;				
 		}

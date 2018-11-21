@@ -157,7 +157,7 @@ AddrSpace::~AddrSpace ()
 {
   // LB: Missing [] for delete
   // delete pageTable;
-  delete [] pageTable;
+  delete pageprovider;
   // End of modification
 }
 
