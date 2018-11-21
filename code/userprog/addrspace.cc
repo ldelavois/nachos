@@ -66,10 +66,10 @@ AddrSpace::AddrSpace (OpenFile * executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
-	nbThreads = 0;
+	nbThreads =0;
     lock = new Semaphore("lock",1);
     synchroThreads = new Semaphore("synchroThreads",0);
-    mapStack = new BitMap(256);
+    
 
     executable->ReadAt (&noffH, sizeof (noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
@@ -97,7 +97,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++)
       {
-	  pageTable[i].physicalPage = i;	// for now, phys page # = virtual page #
+	  pageTable[i].physicalPage = i+1;	// for now, phys page # = virtual page #
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
 	  pageTable[i].dirty = FALSE;
@@ -111,23 +111,41 @@ AddrSpace::AddrSpace (OpenFile * executable)
       {
 	  DEBUG ('a', "Initializing code segment, at 0x%x, size 0x%x\n",
 		 noffH.code.virtualAddr, noffH.code.size);
-	  executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
-			      noffH.code.size, noffH.code.inFileAddr);
+	    
+        /*executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
+			      noffH.code.size, noffH.code.inFileAddr);*/
+        
+        ReadAtVirtual(executable, noffH.code.virtualAddr, 
+            noffH.code.size, 
+            noffH.code.inFileAddr, 
+            pageTable, 
+            numPages);
       }
     if (noffH.initData.size > 0)
       {
 	  DEBUG ('a', "Initializing data segment, at 0x%x, size 0x%x\n",
 		 noffH.initData.virtualAddr, noffH.initData.size);
-	  executable->ReadAt (&
+	    
+        /*executable->ReadAt (&
 			      (machine->mainMemory
 			       [noffH.initData.virtualAddr]),
-			      noffH.initData.size, noffH.initData.inFileAddr);
+			      noffH.initData.size, noffH.initData.inFileAddr);*/
+        
+
+        ReadAtVirtual(executable, 
+            noffH.initData.virtualAddr, 
+            noffH.initData.size, 
+            noffH.initData.inFileAddr, 
+            pageTable, 
+            numPages);
       }
 
     DEBUG ('a', "Area for stacks at 0x%x, size 0x%x\n",
 	   size - UserStacksAreaSize, UserStacksAreaSize);
 
     pageTable[0].valid = FALSE;			// Catch NULL dereference
+    mapStack = new BitMap(UserStacksAreaSize/256);
+    mapStack->Mark(0);
 }
 
 //----------------------------------------------------------------------
@@ -207,7 +225,7 @@ AddrSpace::RestoreState ()
 int
 AddrSpace::AllocateUserStack ()
 {
-    int pointer = currentThread->space->mapStack->Find(); //Pointe sur la première case vide du bitmap et donc de la pile
+    int pointer = currentThread->nThread; //Pointe sur la première case vide du bitmap et donc de la pile
     return numPages * PageSize - 16 - 256*pointer;
 }
 
@@ -247,4 +265,32 @@ AddrSpace::ClearBitMap(int n){
 int 
 AddrSpace::FindBitMap(){
     currentThread->space->mapStack->Find();
+}
+
+void AddrSpace::ReadAtVirtual(OpenFile *executable, 
+                            int virtualaddr, 
+                            int numBytes, 
+                            int position, 
+                            TranslationEntry *pageTable, 
+                            unsigned numPages){
+
+    TranslationEntry *oldPageTable = machine->pageTable;
+    unsigned oldPageTableSize = machine->pageTableSize;
+
+    char *buffer =(char *)malloc(numBytes*sizeof(char));
+
+    executable->ReadAt(buffer, numBytes, position);
+    
+    machine->pageTable = pageTable;
+    machine->pageTableSize = numPages;
+
+    for(int i=0; i<numBytes; i++){
+        machine->WriteMem(virtualaddr+i, 1, buffer[i]);
+    }
+
+    machine->pageTable = oldPageTable;
+    machine->pageTableSize = oldPageTableSize;
+
+    free(buffer);
+
 }

@@ -85,6 +85,7 @@ void ExceptionHandler(ExceptionType which)
 		{
 			DEBUG ('s', "Shutdown, initiated by user.\n");
 			printf("code retour main : %d\n",machine->ReadRegister(4));
+        
             while(currentThread->space->GetNbThreads() != 0){
                 // si nombre de threads > 0 P
                 //currentThread->Yield();
@@ -157,8 +158,8 @@ void ExceptionHandler(ExceptionType which)
 				DEBUG ('s', "ThreadCreate\n");	
 				int f = machine->ReadRegister(4);
 				int arg = machine->ReadRegister(5);
-				currentThread->space->IncNbThreads();
-                do_ThreadCreate(f, arg);
+				int ret=do_ThreadCreate(f, arg);
+                
 				break;				
 		}
 

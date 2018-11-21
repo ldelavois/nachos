@@ -15,7 +15,7 @@
 #ifdef CHANGED
 #ifdef USER_PROGRAM
 SynchConsole *synchconsole;
-#endif
+#endif //CHANGED
 #endif
 
 // This defines *all* of the global data structures used by Nachos.
@@ -184,6 +184,8 @@ Initialize (int argc, char **argv)
 
 #ifdef USER_PROGRAM
     machine = new Machine (debugUserProg);	// this must come first
+    PageProvider *pageprovider;
+
 #endif
 
 #ifdef FILESYS

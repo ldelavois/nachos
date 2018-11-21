@@ -17,6 +17,7 @@
 #include "filesys.h"
 #include "translate.h"
 #include "bitmap.h"
+#include "pageprovider.h"
 
 #define UserStacksAreaSize		1024	// increase this as necessary!
 
@@ -45,7 +46,13 @@ class AddrSpace:dontcopythis
     void synchroThreadsV();
     void ClearBitMap(int n);
     int FindBitMap();
-
+    static void ReadAtVirtual(OpenFile *executable, 
+        int virtualaddr, 
+        int numBytes, 
+        int position, 
+        TranslationEntry *pageTable, 
+        unsigned numPages);
+    
 #endif //CHANGED
 
   private:
@@ -53,10 +60,13 @@ class AddrSpace:dontcopythis
     // for now!
     unsigned int numPages;	// Number of pages in the virtual 
     // address space
+
+    #ifdef CHANGED
     int nbThreads;
     Semaphore *lock;
     Semaphore *synchroThreads;
     BitMap *mapStack;
+    #endif //CHANGED
 };
 
 #endif // ADDRSPACE_H
