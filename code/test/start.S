@@ -201,6 +201,14 @@ ThreadExit:
 	j	$31
 	.end ThreadExit
 
+    .globl ForkExec
+	.ent	ForkExec
+
+ForkExec:
+    addiu $2,$0,SC_ThreadCreate
+	syscall
+	j	$31
+	.end ForkExec
 
 /* dummy function to keep gcc happy */
         .globl  __main

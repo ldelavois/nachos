@@ -223,6 +223,8 @@ Cleanup ()
 #ifdef USER_PROGRAM
     #ifdef CHANGED
     delete synchconsole;
+    delete pageprovider;
+    pageprovider = NULL;
     #endif //CHANGED
     delete machine;
     machine = NULL;

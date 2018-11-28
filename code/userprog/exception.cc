@@ -25,6 +25,19 @@
 #include "system.h"
 #include "syscall.h"
 #include "userthread.h"
+#include "addrspace.h"
+
+void initThread(void *arg)
+{
+    AddrSpace *space = (AddrSpace *)arg;
+    currentThread->space=space;
+    space->InitRegisters();	// set the initial register values
+    space->RestoreState();	// load page table register
+    machine->Run ();		// jump to the user progam
+            ASSERT (FALSE);		// machine->Run never returns;
+            // the address space exits
+            // by doing the syscall "exit"
+}
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
@@ -173,6 +186,32 @@ void ExceptionHandler(ExceptionType which)
                 do_ThreadExit();
 				break;
 		}
+
+        case SC_ForkExec:
+        {
+            DEBUG ('s', "ForkExec\n");
+            int addr = machine->ReadRegister(4);
+            char *filename = (char *)malloc(MAX_STRING_SIZE);
+            synchconsole->copyStringFromMachine(addr, filename, MAX_STRING_SIZE);
+
+            OpenFile *executable = fileSystem->Open (filename);
+            AddrSpace *space;
+
+            if (executable == NULL)
+            {
+            printf ("Unable to open file %s\n", filename);
+            return;
+            }
+            space = new AddrSpace (executable);
+            
+            delete executable;		// close file
+
+            Thread *t = new Thread("newThread");
+            t->space = space;
+            t->Start(initThread,(void *)space);
+
+            break;
+        }
 
 
         #endif //CHANGED

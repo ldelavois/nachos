@@ -22,6 +22,7 @@
 #include "syscall.h"
 #include "new"
 #include "synch.h"
+#include "pageprovider.h"
 
 
 //----------------------------------------------------------------------
@@ -69,7 +70,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	nbThreads =0;
     lock = new Semaphore("lock",1);
     synchroThreads = new Semaphore("synchroThreads",0);
-    
 
     executable->ReadAt (&noffH, sizeof (noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
@@ -97,7 +97,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
     pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++)
       {
-	  pageTable[i].physicalPage = i+1;	// for now, phys page # = virtual page #
+	  //pageTable[i].physicalPage = i+1;	// for now, phys page # = virtual page #
+      pageTable[i].physicalPage = pageprovider->GetEmptyPage(); 
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
 	  pageTable[i].dirty = FALSE;
@@ -155,10 +156,15 @@ AddrSpace::AddrSpace (OpenFile * executable)
 
 AddrSpace::~AddrSpace ()
 {
-  // LB: Missing [] for delete
-  // delete pageTable;
-  delete pageprovider;
-  // End of modification
+    int tmp;
+    // LB: Missing [] for delete
+    for(int i=0; i<numPages; i++){
+        tmp = pageTable[i].physicalPage;
+        if(tmp != NULL)
+            pageprovider->ReleasePage(tmp);
+    }
+    delete pageTable;
+    // End of modification
 }
 
 //----------------------------------------------------------------------
