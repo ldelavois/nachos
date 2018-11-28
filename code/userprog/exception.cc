@@ -33,7 +33,7 @@ void initThread(void *arg)
     currentThread->space=space;
     space->InitRegisters();	// set the initial register values
     space->RestoreState();	// load page table register
-    machine->Run ();		// jump to the user progam
+    machine->Run ();    		// jump to the user progam
             ASSERT (FALSE);		// machine->Run never returns;
             // the address space exits
             // by doing the syscall "exit"
@@ -104,7 +104,9 @@ void ExceptionHandler(ExceptionType which)
                 //currentThread->Yield();
                 currentThread->space->synchroThreadsP();
             }
-			interrupt->Halt ();
+
+            //if(currentThread->space->GetNbThreads()==0) interrupt->Halt ();
+
 			break;
 		}
         case SC_PutChar:
@@ -191,9 +193,8 @@ void ExceptionHandler(ExceptionType which)
         {
             DEBUG ('s', "ForkExec\n");
             int addr = machine->ReadRegister(4);
-            char *filename = (char *)malloc(MAX_STRING_SIZE);
-            synchconsole->copyStringFromMachine(addr, filename, MAX_STRING_SIZE);
-
+            char *filename = (char *)malloc(64);
+            synchconsole->copyStringFromMachine(addr, filename, 64);
             OpenFile *executable = fileSystem->Open (filename);
             AddrSpace *space;
 
@@ -209,6 +210,7 @@ void ExceptionHandler(ExceptionType which)
             Thread *t = new Thread("newThread");
             t->space = space;
             t->Start(initThread,(void *)space);
+            currentThread->Yield();
 
             break;
         }

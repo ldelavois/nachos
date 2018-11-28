@@ -205,7 +205,7 @@ ThreadExit:
 	.ent	ForkExec
 
 ForkExec:
-    addiu $2,$0,SC_ThreadCreate
+    addiu $2,$0,SC_ForkExec
 	syscall
 	j	$31
 	.end ForkExec
