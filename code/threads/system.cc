@@ -15,6 +15,7 @@
 #ifdef CHANGED
 #ifdef USER_PROGRAM
 SynchConsole *synchconsole;
+int cptProc;
 #endif //CHANGED
 #endif
 
@@ -186,7 +187,7 @@ Initialize (int argc, char **argv)
 #ifdef USER_PROGRAM
     machine = new Machine (debugUserProg);	// this must come first
     pageprovider = new PageProvider(NumPhysPages);
-
+    cptProc = 0;
 #endif
 
 #ifdef FILESYS

@@ -105,7 +105,13 @@ void ExceptionHandler(ExceptionType which)
                 currentThread->space->synchroThreadsP();
             }
 
-            //if(currentThread->space->GetNbThreads()==0) interrupt->Halt ();
+            cptProc--;  // On décrémente le nombre de processus
+
+            if(cptProc == 0 ) interrupt->Halt ();
+            else{
+                delete currentThread->space;
+                currentThread->Finish();
+            }
 
 			break;
 		}
@@ -200,8 +206,8 @@ void ExceptionHandler(ExceptionType which)
 
             if (executable == NULL)
             {
-            printf ("Unable to open file %s\n", filename);
-            return;
+                printf ("Unable to open file %s\n", filename);
+                return;
             }
             space = new AddrSpace (executable);
             

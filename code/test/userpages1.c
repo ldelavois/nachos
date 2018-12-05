@@ -1,7 +1,7 @@
 #include "syscall.h"
 main()
 {
-ForkExec("./test/putchar");
-//ForkExec("./test/putchar");
-//while(1);
+    ForkExec("./test/putchar");
+    //ForkExec("./test/putchar");
+    //while(1);
 }

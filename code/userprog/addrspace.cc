@@ -67,7 +67,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
-	nbThreads =0;
+    cptProc = cptProc + 1;
+	nbThreads = 0;
     lock = new Semaphore("lock",1);
     synchroThreads = new Semaphore("synchroThreads",0);
 
@@ -158,7 +159,7 @@ AddrSpace::~AddrSpace ()
 {
     int tmp;
     // LB: Missing [] for delete
-    for(int i=0; i<numPages; i++){
+    for(int i = 0; i < numPages; i++){
         tmp = pageTable[i].physicalPage;
         if(tmp != NULL)
             pageprovider->ReleasePage(tmp);
