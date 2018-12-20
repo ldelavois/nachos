@@ -71,6 +71,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	nbThreads = 0;
     lock = new Semaphore("lock",1);
     synchroThreads = new Semaphore("synchroThreads",0);
+    SetEnoughSpaceTrue();
 
     executable->ReadAt (&noffH, sizeof (noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
@@ -79,7 +80,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     /* Check that this is really a MIPS program */
     ASSERT (noffH.noffMagic == NOFFMAGIC);
 
-// how big is address space?
+    // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size + UserStacksAreaSize;	// we need to increase the size
     // to leave room for the stack
     numPages = divRoundUp (size, PageSize);
@@ -89,24 +90,30 @@ AddrSpace::AddrSpace (OpenFile * executable)
     // to run anything too big --
     // at least until we have
     // virtual memory
-    if (numPages > NumPhysPages)
-	    throw std::bad_alloc();
+    if (numPages > NumPhysPages){
+	    if(pageprovider->NumAvailPage() < numPages){
+            SetEnoughSpaceFalse();
+            throw std::bad_alloc();
+        }
+    }
 
     DEBUG ('a', "Initializing address space, num pages %d, total size 0x%x\n",
 	   numPages, size);
-// first, set up the translation 
+
+    lockAddrSpace->P();
+    // first, set up the translation 
     pageTable = new TranslationEntry[numPages];
-    for (i = 0; i < numPages; i++)
-      {
-	  //pageTable[i].physicalPage = i+1;	// for now, phys page # = virtual page #
-      pageTable[i].physicalPage = pageprovider->GetEmptyPage(); 
-	  pageTable[i].valid = TRUE;
-	  pageTable[i].use = FALSE;
-	  pageTable[i].dirty = FALSE;
-	  pageTable[i].readOnly = FALSE;	// if the code segment was entirely on 
-	  // a separate page, we could set its 
-	  // pages to be read-only
-      }
+    for (i = 0; i < numPages; i++){
+       //pageTable[i].physicalPage = i+1;	// for now, phys page # = virtual page #
+       pageTable[i].physicalPage = pageprovider->GetEmptyPage(); 
+       pageTable[i].valid = TRUE;
+       pageTable[i].use = FALSE;
+       pageTable[i].dirty = FALSE;
+       pageTable[i].readOnly = FALSE;	// if the code segment was entirely on 
+       // a separate page, we could set its 
+       // pages to be read-only
+    }
+    lockAddrSpace->V();
 
 // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)
@@ -300,4 +307,17 @@ void AddrSpace::ReadAtVirtual(OpenFile *executable,
 
     free(buffer);
 
+}
+
+void AddrSpace::SetEnoughSpaceTrue(){
+    enoughSpace = TRUE;
+}
+
+
+void AddrSpace::SetEnoughSpaceFalse(){
+    enoughSpace = FALSE;
+}
+
+bool AddrSpace::GetEnoughSpace(){
+    return enoughSpace;
 }

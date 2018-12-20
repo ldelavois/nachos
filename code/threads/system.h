@@ -38,6 +38,7 @@ extern Machine *machine;	// user program memory and registers
 extern SynchConsole *synchconsole;
 extern PageProvider *pageprovider;
 extern int cptProc;         // Compteur de processus
+extern Semaphore *lockAddrSpace;    // Lock pour attribuer les pages dans addrSpace
 #endif
 
 #ifdef FILESYS_NEEDED		// FILESYS or FILESYS_STUB

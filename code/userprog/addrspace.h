@@ -52,6 +52,9 @@ class AddrSpace:dontcopythis
         int position, 
         TranslationEntry *pageTable, 
         unsigned numPages);
+    void SetEnoughSpaceTrue();
+    void SetEnoughSpaceFalse();
+    bool GetEnoughSpace();
     
 #endif //CHANGED
 
@@ -66,6 +69,8 @@ class AddrSpace:dontcopythis
     Semaphore *lock;
     Semaphore *synchroThreads;
     BitMap *mapStack;
+    bool enoughSpace;   // Vrai par défaut, faux si la place que veux prendre 
+                        // le thread est trop grande par rapport à NumAvailPage()
     #endif //CHANGED
 };
 

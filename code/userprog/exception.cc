@@ -198,6 +198,12 @@ void ExceptionHandler(ExceptionType which)
         case SC_ForkExec:
         {
             DEBUG ('s', "ForkExec\n");
+            // Si pas de place on delete ce qu'on a commencé à créer
+            if(!currentThread->space->GetEnoughSpace()){
+                delete currentThread->space;
+                break;
+            }
+
             int addr = machine->ReadRegister(4);
             char *filename = (char *)malloc(64);
             synchconsole->copyStringFromMachine(addr, filename, 64);

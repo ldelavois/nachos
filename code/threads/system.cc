@@ -16,6 +16,7 @@
 #ifdef USER_PROGRAM
 SynchConsole *synchconsole;
 int cptProc;
+Semaphore *lockAddrSpace;
 #endif //CHANGED
 #endif
 
@@ -188,6 +189,8 @@ Initialize (int argc, char **argv)
     machine = new Machine (debugUserProg);	// this must come first
     pageprovider = new PageProvider(NumPhysPages);
     cptProc = 0;
+    lockAddrSpace = new Semaphore("lock AddrSpace", 0);
+    
 #endif
 
 #ifdef FILESYS
